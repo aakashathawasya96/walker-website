@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walker - Walk more, together | Bangalore Walking Community</title>
+    <meta name="description" content="Join Bangalore's walking community. Track steps and routes, join friendly challenges, and discover group walks across the city.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Favicon placeholder -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚶</text></svg>">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">🚶</span>
+                <span class="logo-text">Walker</span>
+            </div>
+            <div class="nav-links">
+                <a href="#how-it-works">How it Works</a>
+                <a href="#community-walks">Community Walks</a>
+                <a href="#faq">FAQ</a>
+                <a href="pages/about.html">About</a>
+            </div>
+            <div class="nav-mobile-toggle">☰</div>
+        </div>
+    </nav>
+
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Walk more, together.</h1>
+                <p class="hero-subtitle">Join Bangalore's walking community. Track steps and routes, join friendly challenges, and discover group walks across the city.</p>
+                
+                <div class="hero-ctas">
+                    <button class="cta-primary" onclick="openEmailSignup()">Get Early Access</button>
+                    <a href="https://chat.whatsapp.com/placeholder" class="cta-secondary" target="_blank">Join WhatsApp Group</a>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="walking-illustration">
+                    <div class="city-silhouette"></div>
+                    <div class="walking-path"></div>
+                    <div class="walking-figures">
+                        <span class="figure">🚶‍♀️</span>
+                        <span class="figure">🚶‍♂️</span>
+                        <span class="figure">🚶</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How it works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon">📊</div>
+                    <h3>Track your walks</h3>
+                    <p>Steps, distance, and routes—simple and accurate.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">👥</div>
+                    <h3>Walk with people</h3>
+                    <p>Find or host group/destination walks near you.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">🏆</div>
+                    <h3>Friendly challenges</h3>
+                    <p>Team and solo challenges with badges and leaderboards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Why Walker -->
+    <section class="why-walker">
+        <div class="container">
+            <h2 class="section-title">Why Walker?</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">💚</div>
+                    <h3>Health that fits your day</h3>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🤝</div>
+                    <h3>Make friends, not PRs</h3>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🏙️</div>
+                    <h3>Explore your city on foot</h3>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🚶‍♂️</div>
+                    <h3>Choose walking over short cab rides</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Community Walks -->
+    <section id="community-walks" class="community-walks">
+        <div class="container">
+            <h2 class="section-title">Upcoming Community Walks</h2>
+            <div class="walks-grid">
+                <div class="walk-card">
+                    <h3>Local Park Sunrise 5K</h3>
+                    <div class="walk-details">
+                        <span class="walk-time">🕕 Sat 7:00 AM</span>
+                        <span class="walk-location">📍 Gate B</span>
+                    </div>
+                </div>
+                <div class="walk-card">
+                    <h3>MG Road Coffee Loop</h3>
+                    <div class="walk-details">
+                        <span class="walk-time">🕘 Sun 9:00 AM</span>
+                        <span class="walk-location">📍 MG Road</span>
+                    </div>
+                </div>
+                <div class="walk-card">
+                    <h3>Heritage Stroll</h3>
+                    <div class="walk-details">
+                        <span class="walk-time">🕖 Sun 7:30 AM</span>
+                        <span class="walk-location">📍 West Gate</span>
+                    </div>
+                </div>
+            </div>
+            <div class="walks-cta">
+                <a href="pages/community-walks.html" class="btn-outline">View All Walks</a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Social Proof -->
+    <section class="social-proof">
+        <div class="container">
+            <h2 class="section-title">What walkers are saying</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <p>"Walker helped me turn my morning commute into the best part of my day."</p>
+                    <cite>— Priya, Software Engineer</cite>
+                </div>
+                <div class="testimonial">
+                    <p>"I've made more friends in 2 months than I had in 2 years. Bangalore feels smaller now."</p>
+                    <cite>— Raj, Marketing Manager</cite>
+                </div>
+                <div class="testimonial">
+                    <p>"Finally, a fitness app that doesn't make me feel guilty about missing workouts."</p>
+                    <cite>— Maya, Designer</cite>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- FAQ -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">Is Walker free?</div>
+                    <div class="faq-answer">Yes, early access is free.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Do I need special gear?</div>
+                    <div class="faq-answer">Comfortable shoes and a water bottle.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">Is it safe?</div>
+                    <div class="faq-answer">Public routes and group options; common-sense safety tips provided.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">I'm a beginner.</div>
+                    <div class="faq-answer">Perfect—walks are low-pressure and social.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <h2>Ready to start walking?</h2>
+            <p>Join hundreds of Bangaloreans who are already walking more, together.</p>
+            <div class="cta-buttons">
+                <button class="cta-primary" onclick="openEmailSignup()">Get Early Access</button>
+                <a href="https://chat.whatsapp.com/placeholder" class="cta-secondary" target="_blank">Join WhatsApp Group</a>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">🚶</span>
+                    <span class="logo-text">Walker</span>
+                    <p>Walk more, together.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Product</h4>
+                        <a href="#how-it-works">How it Works</a>
+                        <a href="pages/community-walks.html">Community Walks</a>
+                        <a href="pages/challenges.html">Challenges</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <a href="pages/about.html">About</a>
+                        <a href="pages/blog.html">Blog</a>
+                        <a href="mailto:hello@walkmore.app">Contact</a>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <a href="pages/privacy.html">Privacy</a>
+                        <a href="pages/terms.html">Terms</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Walker • Bangalore, India • <a href="mailto:hello@walkmore.app">hello@walkmore.app</a></p>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Email Signup Modal -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEmailSignup()">&times;</span>
+            <h3>Get Early Access to Walker</h3>
+            <p>Be the first to know when Walker launches in Bangalore.</p>
+            <!-- Updated Formspree Integration Start -->
+            <form id="emailForm" action="https://formspree.io/f/mkgvadvq" method="POST" onsubmit="handleEmailSignup(event)">
+                <input type="email" name="email" id="emailInput" placeholder="Enter your email" required>
+                <input type="hidden" name="_subject" value="New Walker Early Access Signup">
+                <input type="hidden" name="_next" value="thankyou">
+                <button type="submit" class="cta-primary">Get Early Access</button>
+            </form>
+            <div id="emailSuccess" class="success-message" style="display: none;">
+                <p>🎉 Thanks! You're on the list. We'll be in touch soon.</p>
+            </div>
+            <!-- Updated Formspree Integration End -->
+        </div>
+    </div>
+
+    <!-- Formspree JS Integration -->
+    <script>
+    function closeEmailSignup() {
+        // Your logic to close/hide the modal (implement as per your site's needs)
+        document.getElementById('emailModal').style.display = 'none';
+    }
+    function openEmailSignup() {
+        // Your logic to show/open the modal (implement as per your site's needs)
+        document.getElementById('emailModal').style.display = 'block';
+    }
+    function handleEmailSignup(event) {
+        event.preventDefault();
+        const form = document.getElementById('emailForm');
+        const formData = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {'Accept': 'application/json'}
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('emailForm').style.display = 'none';
+                document.getElementById('emailSuccess').style.display = 'block';
+                setTimeout(() => {
+                    closeEmailSignup();
+                    document.getElementById('emailForm').style.display = 'block';
+                    document.getElementById('emailSuccess').style.display = 'none';
+                    document.getElementById('emailInput').value = '';
+                }, 3000);
+            } else {
+                alert('Sorry, there was an error. Please try again.');
+            }
+        })
+        .catch(error => {
+            alert('Sorry, there was an error. Please try again.');
+        });
+    }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
