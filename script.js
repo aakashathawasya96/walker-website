@@ -4,46 +4,132 @@
 function openEmailSignup() {
     document.getElementById('emailModal').style.display = 'block';
     document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    
+    // Set timestamp when modal opens
+    const timestamp = new Date().toISOString();
+    const timestampField = document.querySelector('input[name="timestamp"]');
+    if (timestampField) {
+        timestampField.value = timestamp;
+    }
+    
+    // Track modal open
+    trackEvent('email_modal_opened', {
+        source: 'homepage',
+        timestamp: timestamp
+    });
 }
 
 function closeEmailSignup() {
     document.getElementById('emailModal').style.display = 'none';
     document.body.style.overflow = 'auto';
+    
+    // Track modal close
+    trackEvent('email_modal_closed', {
+        source: 'homepage'
+    });
 }
 
-// Handle email signup form submission
+// Handle email signup form submission with Formspree
 function handleEmailSignup(event) {
     event.preventDefault();
     
+    const form = document.getElementById('emailForm');
     const emailInput = document.getElementById('emailInput');
     const email = emailInput.value;
     const successMessage = document.getElementById('emailSuccess');
-    const form = document.getElementById('emailForm');
+    const submitButton = form.querySelector('button[type="submit"]');
     
     // Basic email validation
     if (!isValidEmail(email)) {
         alert('Please enter a valid email address.');
+        trackEvent('email_signup_validation_error', {
+            error: 'invalid_email_format',
+            email: email
+        });
         return;
     }
     
-    // TODO: Replace with your actual email collection service
-    // For now, we'll simulate a successful signup
-    console.log('Email signup:', email);
+    // Show loading state
+    const originalText = submitButton.textContent;
+    submitButton.textContent = 'Signing up...';
+    submitButton.disabled = true;
+    submitButton.style.opacity = '0.7';
     
-    // Hide form and show success message
-    form.style.display = 'none';
-    successMessage.style.display = 'block';
+    // Prepare form data
+    const formData = new FormData(form);
     
-    // Store email locally for now (replace with actual service)
-    storeEmailLocally(email);
+    // Add additional tracking data
+    formData.set('timestamp', new Date().toISOString());
+    formData.set('user_agent', navigator.userAgent);
+    formData.set('referrer', document.referrer || 'direct');
+    formData.set('page_url', window.location.href);
     
-    // Auto close after 3 seconds
-    setTimeout(() => {
-        closeEmailSignup();
-        form.style.display = 'block';
-        successMessage.style.display = 'none';
-        emailInput.value = '';
-    }, 3000);
+    // Submit to Formspree
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            // Success - show success message
+            form.style.display = 'none';
+            successMessage.style.display = 'block';
+            
+            // Track successful signup
+            trackEvent('email_signup_success', {
+                email: email,
+                source: 'homepage_modal',
+                city: 'Bangalore',
+                timestamp: new Date().toISOString()
+            });
+            
+            // Store email locally for future reference
+            storeEmailLocally(email);
+            
+            // Auto close after 5 seconds
+            setTimeout(() => {
+                closeEmailSignup();
+                
+                // Reset form for next use
+                form.style.display = 'block';
+                successMessage.style.display = 'none';
+                emailInput.value = '';
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+                submitButton.style.opacity = '1';
+                
+                // Optional: Show WhatsApp prompt
+                showWhatsAppPrompt();
+            }, 5000);
+            
+        } else {
+            response.text().then(text => {
+                throw new Error(`Server error: ${response.status} - ${text}`);
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Email signup error:', error);
+        
+        // Show user-friendly error message
+        alert('Sorry, there was an error signing you up. Please try again or contact us directly at hello@walkmore.app');
+        
+        // Reset button state
+        submitButton.textContent = originalText;
+        submitButton.disabled = false;
+        submitButton.style.opacity = '1';
+        
+        // Track error
+        trackEvent('email_signup_error', {
+            error: error.message,
+            email: email,
+            source: 'homepage_modal',
+            timestamp: new Date().toISOString()
+        });
+    });
 }
 
 // Email validation helper
@@ -52,16 +138,46 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-// Store email locally (replace with actual service)
+// Store email locally for analytics
 function storeEmailLocally(email) {
-    let emails = JSON.parse(localStorage.getItem('walkerEmails') || '[]');
-    if (!emails.includes(email)) {
-        emails.push({
+    try {
+        let emails = JSON.parse(localStorage.getItem('walkerEmails') || '[]');
+        const emailEntry = {
             email: email,
             timestamp: new Date().toISOString(),
-            source: 'homepage'
-        });
-        localStorage.setItem('walkerEmails', JSON.stringify(emails));
+            source: 'homepage_modal',
+            city: 'Bangalore',
+            user_agent: navigator.userAgent,
+            page_url: window.location.href
+        };
+        
+        // Avoid duplicates
+        if (!emails.find(e => e.email === email)) {
+            emails.push(emailEntry);
+            localStorage.setItem('walkerEmails', JSON.stringify(emails));
+        }
+    } catch (error) {
+        console.error('Error storing email locally:', error);
+    }
+}
+
+// Optional WhatsApp prompt after successful signup
+function showWhatsAppPrompt() {
+    // Only show if we haven't shown it before
+    if (!localStorage.getItem('walkerWhatsAppPromptShown')) {
+        setTimeout(() => {
+            if (confirm('🎉 Thanks for signing up! Would you like to join our WhatsApp community for early updates and local walks?')) {
+                window.open('https://chat.whatsapp.com/placeholder', '_blank');
+                trackEvent('whatsapp_prompt_accepted', {
+                    source: 'post_email_signup'
+                });
+            } else {
+                trackEvent('whatsapp_prompt_declined', {
+                    source: 'post_email_signup'
+                });
+            }
+            localStorage.setItem('walkerWhatsAppPromptShown', 'true');
+        }, 1000);
     }
 }
 
@@ -69,7 +185,7 @@ function storeEmailLocally(email) {
 function initializeFAQ() {
     const faqItems = document.querySelectorAll('.faq-item');
     
-    faqItems.forEach(item => {
+    faqItems.forEach((item, index) => {
         const question = item.querySelector('.faq-question');
         const answer = item.querySelector('.faq-answer');
         
@@ -80,7 +196,7 @@ function initializeFAQ() {
             const isOpen = answer.style.display === 'block';
             
             // Close all other FAQ items
-            faqItems.forEach(otherItem => {
+            faqItems.forEach((otherItem, otherIndex) => {
                 const otherAnswer = otherItem.querySelector('.faq-answer');
                 otherAnswer.style.display = 'none';
                 otherItem.classList.remove('active');
@@ -90,6 +206,21 @@ function initializeFAQ() {
             if (!isOpen) {
                 answer.style.display = 'block';
                 item.classList.add('active');
+                
+                // Track FAQ interaction
+                trackEvent('faq_opened', {
+                    question_index: index,
+                    question_text: question.textContent.trim()
+                });
+            }
+        });
+        
+        // Make questions keyboard accessible
+        question.setAttribute('tabindex', '0');
+        question.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                question.click();
             }
         });
     });
@@ -115,12 +246,18 @@ function initializeSmoothScrolling() {
                     top: offsetPosition,
                     behavior: 'smooth'
                 });
+                
+                // Track navigation clicks
+                trackEvent('navigation_click', {
+                    target_section: targetId,
+                    link_text: link.textContent.trim()
+                });
             }
         });
     });
 }
 
-// Mobile menu toggle (basic functionality)
+// Mobile menu toggle
 function initializeMobileMenu() {
     const mobileToggle = document.querySelector('.nav-mobile-toggle');
     const navLinks = document.querySelector('.nav-links');
@@ -128,6 +265,19 @@ function initializeMobileMenu() {
     if (mobileToggle && navLinks) {
         mobileToggle.addEventListener('click', () => {
             navLinks.classList.toggle('mobile-open');
+            
+            // Track mobile menu usage
+            trackEvent('mobile_menu_toggle', {
+                action: navLinks.classList.contains('mobile-open') ? 'opened' : 'closed'
+            });
+        });
+        
+        // Close mobile menu when clicking on a link
+        const mobileNavLinks = navLinks.querySelectorAll('a');
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('mobile-open');
+            });
         });
     }
 }
@@ -153,110 +303,200 @@ function initializeKeyboardSupport() {
             closeEmailSignup();
         }
         
-        // Enter key to open email signup from CTA buttons
-        const ctaButtons = document.querySelectorAll('.cta-primary');
-        ctaButtons.forEach(button => {
-            button.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    openEmailSignup();
-                }
-            });
-        });
+        // Focus management for modal
+        if (modal.style.display === 'block' && e.key === 'Tab') {
+            const focusableElements = modal.querySelectorAll('input, button, [tabindex]:not([tabindex="-1"])');
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            
+            if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
     });
 }
 
-// Analytics tracking (placeholder)
+// Analytics tracking
 function trackEvent(eventName, properties = {}) {
-    // TODO: Replace with your analytics service (Google Analytics, Mixpanel, etc.)
+    // Console logging for development
     console.log('Track event:', eventName, properties);
     
-    // Example for Google Analytics (gtag)
+    // Add common properties
+    const eventData = {
+        ...properties,
+        timestamp: new Date().toISOString(),
+        page_url: window.location.href,
+        user_agent: navigator.userAgent,
+        screen_resolution: `${screen.width}x${screen.height}`,
+        viewport_size: `${window.innerWidth}x${window.innerHeight}`
+    };
+    
+    // TODO: Replace with your analytics service
+    // Example for Google Analytics 4:
     // if (typeof gtag !== 'undefined') {
-    //     gtag('event', eventName, properties);
+    //     gtag('event', eventName, eventData);
     // }
+    
+    // Example for Mixpanel:
+    // if (typeof mixpanel !== 'undefined') {
+    //     mixpanel.track(eventName, eventData);
+    // }
+    
+    // Store events locally for now
+    try {
+        let events = JSON.parse(localStorage.getItem('walkerEvents') || '[]');
+        events.push({ event: eventName, properties: eventData });
+        
+        // Keep only last 100 events to avoid storage bloat
+        if (events.length > 100) {
+            events = events.slice(-100);
+        }
+        
+        localStorage.setItem('walkerEvents', JSON.stringify(events));
+    } catch (error) {
+        console.error('Error storing analytics event:', error);
+    }
 }
 
-// Track CTA clicks
+// Track CTA and link interactions
 function initializeAnalytics() {
-    // Track email signup attempts
-    document.getElementById('emailForm').addEventListener('submit', () => {
-        trackEvent('email_signup_attempt', {
-            source: 'homepage_modal'
-        });
-    });
-    
     // Track WhatsApp button clicks
     const whatsappButtons = document.querySelectorAll('a[href*="whatsapp"]');
-    whatsappButtons.forEach(button => {
+    whatsappButtons.forEach((button, index) => {
         button.addEventListener('click', () => {
             trackEvent('whatsapp_click', {
-                source: 'homepage'
+                button_location: index === 0 ? 'hero' : 'final_cta',
+                button_text: button.textContent.trim()
             });
         });
     });
     
-    // Track navigation clicks
-    const navLinks = document.querySelectorAll('.nav-links a');
-    navLinks.forEach(link => {
+    // Track footer link clicks
+    const footerLinks = document.querySelectorAll('.footer a');
+    footerLinks.forEach(link => {
         link.addEventListener('click', () => {
-            trackEvent('navigation_click', {
-                page: link.textContent.toLowerCase(),
-                href: link.getAttribute('href')
+            trackEvent('footer_link_click', {
+                link_text: link.textContent.trim(),
+                link_href: link.getAttribute('href')
             });
         });
     });
-}
-
-// Lazy loading for images (if you add any)
-function initializeLazyLoading() {
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    imageObserver.unobserve(img);
-                }
+    
+    // Track "View All Walks" button
+    const viewAllWalksBtn = document.querySelector('.walks-cta .btn-outline');
+    if (viewAllWalksBtn) {
+        viewAllWalksBtn.addEventListener('click', () => {
+            trackEvent('view_all_walks_click', {
+                source: 'community_walks_section'
             });
         });
-
-        const images = document.querySelectorAll('img[data-src]');
-        images.forEach(img => imageObserver.observe(img));
     }
+}
+
+// Page visibility tracking
+function initializeVisibilityTracking() {
+    let startTime = Date.now();
+    let isVisible = true;
+    
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            if (isVisible) {
+                const timeSpent = Date.now() - startTime;
+                trackEvent('page_visibility_hidden', {
+                    time_visible: timeSpent,
+                    time_visible_seconds: Math.round(timeSpent / 1000)
+                });
+                isVisible = false;
+            }
+        } else {
+            startTime = Date.now();
+            isVisible = true;
+            trackEvent('page_visibility_visible');
+        }
+    });
+    
+    // Track time spent on page when leaving
+    window.addEventListener('beforeunload', () => {
+        if (isVisible) {
+            const timeSpent = Date.now() - startTime;
+            trackEvent('page_unload', {
+                total_time_on_page: timeSpent,
+                total_time_seconds: Math.round(timeSpent / 1000)
+            });
+        }
+    });
 }
 
 // Performance monitoring
 function initializePerformance() {
-    // Monitor page load performance
     window.addEventListener('load', () => {
         setTimeout(() => {
-            const perfData = performance.getEntriesByType('navigation')[0];
-            const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
-            
-            trackEvent('page_performance', {
-                load_time: loadTime,
-                dom_content_loaded: perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart
-            });
+            if (performance.getEntriesByType) {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                if (perfData) {
+                    trackEvent('page_performance', {
+                        load_time: Math.round(perfData.loadEventEnd - perfData.loadEventStart),
+                        dom_content_loaded: Math.round(perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart),
+                        first_byte: Math.round(perfData.responseStart - perfData.requestStart),
+                        dom_interactive: Math.round(perfData.domInteractive - perfData.navigationStart)
+                    });
+                }
+            }
         }, 0);
     });
 }
 
+// Check for URL parameters (success state, etc.)
+function checkURLParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.get('signup') === 'success') {
+        // Show success message or take action for successful signup
+        setTimeout(() => {
+            alert('🎉 Thanks for signing up for Walker! Check your email for confirmation.');
+            
+            // Clean up URL
+            const cleanURL = window.location.href.split('?')[0];
+            window.history.replaceState({}, document.title, cleanURL);
+        }, 1000);
+        
+        trackEvent('signup_success_page_view', {
+            referrer: document.referrer
+        });
+    }
+}
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Core functionality
     initializeFAQ();
     initializeSmoothScrolling();
     initializeMobileMenu();
     initializeModalClose();
     initializeKeyboardSupport();
+    
+    // Analytics and tracking
     initializeAnalytics();
-    initializeLazyLoading();
+    initializeVisibilityTracking();
     initializePerformance();
     
-    // Add loading class removal after page loads
+    // Check URL parameters
+    checkURLParameters();
+    
+    // Add loaded class for CSS animations
     document.body.classList.add('loaded');
     
-    console.log('Walker website initialized successfully!');
+    // Track page load
+    trackEvent('page_loaded', {
+        page_title: document.title,
+        referrer: document.referrer || 'direct'
+    });
+    
+    console.log('Walker website initialized successfully! 🚶‍♀️🚶‍♂️');
 });
 
 // Service worker registration (for future PWA features)
@@ -265,9 +505,13 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/sw.js')
             .then(registration => {
                 console.log('SW registered: ', registration);
+                trackEvent('service_worker_registered');
             })
             .catch(registrationError => {
                 console.log('SW registration failed: ', registrationError);
+                trackEvent('service_worker_registration_failed', {
+                    error: registrationError.message
+                });
             });
     });
 }
@@ -279,6 +523,7 @@ if (typeof module !== 'undefined' && module.exports) {
         closeEmailSignup,
         handleEmailSignup,
         isValidEmail,
-        trackEvent
+        trackEvent,
+        storeEmailLocally
     };
 }
