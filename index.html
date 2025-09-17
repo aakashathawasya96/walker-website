@@ -35,7 +35,6 @@
         </div>
     </nav>
 
-
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
@@ -63,7 +62,6 @@
         </div>
     </section>
 
-
     <!-- How It Works -->
     <section id="how-it-works" class="how-it-works">
         <div class="container">
@@ -87,7 +85,6 @@
             </div>
         </div>
     </section>
-
 
     <!-- Why Walker -->
     <section class="why-walker">
@@ -113,7 +110,6 @@
             </div>
         </div>
     </section>
-
 
     <!-- Community Walks -->
     <section id="community-walks" class="community-walks">
@@ -148,7 +144,6 @@
         </div>
     </section>
 
-
     <!-- Social Proof -->
     <section class="social-proof">
         <div class="container">
@@ -169,7 +164,6 @@
             </div>
         </div>
     </section>
-
 
     <!-- FAQ -->
     <section id="faq" class="faq">
@@ -196,7 +190,6 @@
         </div>
     </section>
 
-
     <!-- Final CTA -->
     <section class="final-cta">
         <div class="container">
@@ -208,7 +201,6 @@
             </div>
         </div>
     </section>
-
 
     <!-- Footer -->
     <footer class="footer">
@@ -245,65 +237,28 @@
         </div>
     </footer>
 
-
     <!-- Email Signup Modal -->
     <div id="emailModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeEmailSignup()">&times;</span>
             <h3>Get Early Access to Walker</h3>
             <p>Be the first to know when Walker launches in Bangalore.</p>
-            <!-- Updated Formspree Integration Start -->
-            <form id="emailForm" action="https://formspree.io/f/mkgvadvq" method="POST" onsubmit="handleEmailSignup(event)">
+            <form id="emailForm" action="https://formspree.io/f/mkgvadvq" method="POST">
                 <input type="email" name="email" id="emailInput" placeholder="Enter your email" required>
-                <input type="hidden" name="_subject" value="New Walker Early Access Signup">
-                <input type="hidden" name="_next" value="thankyou">
+                <input type="hidden" name="_subject" value="New Walker Early Access Signup - Bangalore">
+                <input type="hidden" name="_next" value="https://aakashathawasya96.github.io/walker-website/?signup=success">
+                <input type="hidden" name="source" value="homepage_modal">
+                <input type="hidden" name="city" value="Bangalore">
+                <input type="hidden" name="timestamp" value="">
                 <button type="submit" class="cta-primary">Get Early Access</button>
             </form>
             <div id="emailSuccess" class="success-message" style="display: none;">
-                <p>🎉 Thanks! You're on the list. We'll be in touch soon.</p>
+                <p>🎉 Welcome to the Walker community! We'll email you when we launch in Bangalore.</p>
+                <p style="font-size: 0.9rem; margin-top: 1rem; opacity: 0.8;">Don't forget to join our WhatsApp group for community walks!</p>
             </div>
-            <!-- Updated Formspree Integration End -->
         </div>
     </div>
 
-    <!-- Formspree JS Integration -->
-    <script>
-    function closeEmailSignup() {
-        // Your logic to close/hide the modal (implement as per your site's needs)
-        document.getElementById('emailModal').style.display = 'none';
-    }
-    function openEmailSignup() {
-        // Your logic to show/open the modal (implement as per your site's needs)
-        document.getElementById('emailModal').style.display = 'block';
-    }
-    function handleEmailSignup(event) {
-        event.preventDefault();
-        const form = document.getElementById('emailForm');
-        const formData = new FormData(form);
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {'Accept': 'application/json'}
-        })
-        .then(response => {
-            if (response.ok) {
-                document.getElementById('emailForm').style.display = 'none';
-                document.getElementById('emailSuccess').style.display = 'block';
-                setTimeout(() => {
-                    closeEmailSignup();
-                    document.getElementById('emailForm').style.display = 'block';
-                    document.getElementById('emailSuccess').style.display = 'none';
-                    document.getElementById('emailInput').value = '';
-                }, 3000);
-            } else {
-                alert('Sorry, there was an error. Please try again.');
-            }
-        })
-        .catch(error => {
-            alert('Sorry, there was an error. Please try again.');
-        });
-    }
-    </script>
     <script src="script.js"></script>
 </body>
 </html>
